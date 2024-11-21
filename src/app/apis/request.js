@@ -1,11 +1,11 @@
-const localUrl = 'http://localhost:8080';
+//const localUrl = 'http://localhost:8080';
 const remoteUrl = 'http://121.162.75.86:8080';
 
 export const apiUrl = remoteUrl;
 
 export const requestGet = async(url) => {
     const token = ""; //로컬 스토리지에서 가져와야함
-    const UUID = ""; //로컬 스토리지에서 가져와야함
+    //const UUID = ""; //로컬 스토리지에서 가져와야함
     if(token !== ""){
 
     }

@@ -19,7 +19,7 @@ export default function UsersClient(){
     useEffect(() => {
         async function fetchUsers(){           
             try{
-                let userList = await requestGet('/api/test/user');
+                const userList = await requestGet('/api/test/user');
 
                 if(userList !== null){
                     setUsers(userList);
