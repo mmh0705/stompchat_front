@@ -16,6 +16,9 @@ export const Navigation = () => {
             <Link href="/products/1" className={pathname.startsWith('/products/1') ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
                 Product 1
             </Link>
+            <Link href="/chat" className={pathname === '/chat' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
+                Chat
+            </Link>
         </nav>
     );
 };

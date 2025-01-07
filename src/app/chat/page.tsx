@@ -14,8 +14,8 @@ export default function Chat() {
         //소켓 연결
         try{
             const stompClient = new StompJs.Client({
-                brokerURL: "ws://121.162.75.86:8080/gs-guide-websocket",
-                //brokerURL: "ws://localhost:8080/gs-guide-websocket",
+                //brokerURL: "ws://121.162.75.86:8080/gs-guide-websocket",
+                brokerURL: "ws://localhost:8080/gs-guide-websocket",
                 reconnectDelay: 5000, // 자동 재 연결
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
