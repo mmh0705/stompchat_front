@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import * as StompJs from "@stomp/stompjs";
 
 export default function Chat() {   
-    const [client, setClient] = useState<StompJs.Client | null>(null);
+    const [client] = useState<StompJs.Client | null>(null);
     const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState<string[]>(['']);
 
