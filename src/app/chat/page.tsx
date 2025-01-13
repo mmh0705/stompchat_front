@@ -1,13 +1,18 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as StompJs from "@stomp/stompjs";
 
 export default function Chat() {   
     const [client, setClient] = useState<StompJs.Client | null>(null);
-    const [name, setName] = useState("");
+    const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState<string[]>(['']);
-    const [websocket, setWebsocket] = useState<WebSocket>(new WebSocket("ws://localhost:8080/user/websocket"));
+
+    const websocket = useRef<WebSocket | null>(null);
+    const localSocketURL = "ws://localhost:8080/user/websocket";
+    const remoteSocketURL = "ws://121.162.75.86:8080/user/websocket";
+    //const [websocket, setWebsocket] = useState<WebSocket>(new WebSocket("ws://localhost:8080/user/websocket"));
+
     /**
      * 연결
      */
@@ -42,9 +47,26 @@ export default function Chat() {
         // Vanilla WebSocket
         // let temp = new WebSocket("ws://localhost:8080/user/websocket");
         // setWebsocket(temp);
-        websocket.onmessage = onMessage;	// 소켓이 메세지를 받을 때
-        websocket.onopen = onOpen;		// 소켓이 생성될때(클라이언트 접속)
-        websocket.onclose = onClose;	// 소켓이 닫힐때(클라이언트 접속해제)  
+        websocket.current = new WebSocket(remoteSocketURL);
+        websocket.current.onopen = () => {
+            console.log('웹소켓 열림');
+        }
+        
+        websocket.current.onclose = () => {
+            console.log('웹소켓 닫힘');
+        }
+
+        websocket.current.onerror = () => {
+            console.log('웹소켓 에러');
+        }
+
+        websocket.current.onmessage = (event) => {
+            console.log('메시지 : ' + event.data);
+            //접속 캐치
+                
+            //일반 메시지
+        };
+    
     }
 
     /**
@@ -69,7 +91,13 @@ export default function Chat() {
         //     destination: "/app/hello",
         //     body: JSON.stringify({name: name})
         // });
-        websocket.send(name);
+        let messageData = {
+            user: "익명",
+            message: message,
+            isOnOpen: false,
+            isOnClose: false
+        }
+        websocket.current?.send(JSON.stringify(messageData));
     }
 
     /**
@@ -84,41 +112,14 @@ export default function Chat() {
         connect();
 
         return () => {
-            disconnect();
-        }
+            websocket.current?.close();
+        };
     },[]);
 
-
-
-
-
-
-
-    const onSetName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
+    const onSetMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage(event.target.value);
     }
 
-
-    // 바닐라 웹소켓 전용
-    
-    const onClose = (evt :any) => {
-        console.log("close event : " + evt);
-    }
-
-    const onOpen = (evt :any) => {
-        console.log("open event : " + evt);
-    }
-    const onMessage = (msg: any) => {
-        let data =msg.data; // msg를 받으면 data 필드 안에 Json String으로 정보가 있음
-        // 필요한 정보를 Json data에서 추출
-
-        console.log(data);
-        let senderId = data.senderId;
-        let message = data.message;
-        let time = data.time;
-        let newOne = data.newOne;
-        let outOne = data.outOne;
-    }
     return(
         <div>
             {/* 바깥 */}
@@ -129,20 +130,27 @@ export default function Chat() {
                 </div>
                 
                 {/* 오른쪽 */}
-                <div className="bg-slate-200 w-full h-full">
-                    {
-                        messageList.map((message, index) => (
-                            <div key={index}>{message}</div>
-                        ))
-                    }
+                <div className="flex flex-col w-full h-full bg-slate-200">
+                    
+                    {/* 채팅 디스플레이 */}
                     <div>
-                        <button className="bg-slate-500" onClick={sendChat}>전송</button>
+                        {
+                            messageList.map((message, index) => (
+                                <div key={index}>{message}</div>
+                            ))
+                        }
                     </div>
+                    
+                    {/* 채팅 입력 */}
                     <div>
-                        <input type="text" value={name} onChange={onSetName}>
-                        
-                        </input>
+                        <div>
+                            <button className="bg-slate-500" onClick={sendChat}>전송</button>
+                        </div>
+                        <div>
+                            <input type="text" value={message} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {setMessage(event.target.value)}}></input>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
            
