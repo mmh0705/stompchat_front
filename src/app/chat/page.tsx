@@ -93,19 +93,19 @@ export default function Chat() {
     return(
         <div>
             {/* 바깥 */}
-            <div className="flex flex-row items-center h-dvh"> 
+            <div className="flex flex-col items-center h-dvh"> 
                 {/* 왼쪽 */}
-                <div className="bg-white min-w-60 h-full text-black p-5">
+                <div className="bg-white min-w-60 h-16 text-black p-5">
                     현재 접속자 숫자 : {connectedClientsCount}    
                 </div>
                 
                 {/* 오른쪽 */}
-                <div className="flex flex-col w-full h-full bg-slate-200 overflow-auto items-center justify-center">
+                <div className="flex flex-col w-full h-full bg-slate-200 items-center justify-center">
                 
                    {/**채팅유닛 */}
-                    <div className="flex flex-col bg-slate-400 rounded-md h-5/6 w-5/6 p-5">
+                    <div className="flex flex-col bg-slate-400 rounded-md h-5/6 w-5/6 p-5 ">
                         {/**채팅창 */}
-                        <div className="flex-grow">
+                        <div className="flex-grow overflow-auto">
                             <ul>
                                {
                                 chatList.map((message, index) => {
