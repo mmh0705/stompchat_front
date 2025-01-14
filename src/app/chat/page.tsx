@@ -1,15 +1,5 @@
 'use client';
 
-// let messageData = {
-//     user: "익명",
-//     message: "메시지",
-
-//     isOnOpen: false,
-//     isOnClose: false,
-//     userCount: 0,
-// }
-
-
 import { useState, useEffect, useRef } from "react";
 import * as StompJs from "@stomp/stompjs";
 import * as React from 'react';
