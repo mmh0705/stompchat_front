@@ -125,11 +125,11 @@ export default function Chat() {
                         <div>
                             <ul>
                                {
-                                // chatList.map((message) => {
-                                //     return(
-                                //         <li key={message}>{message}</li>
-                                //     )
-                                // })
+                                chatList.map((message) => {
+                                    return(
+                                        <li key={message}>{message}</li>
+                                    )
+                                })
                                }
                             </ul>
                         </div>
