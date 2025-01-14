@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import * as StompJs from "@stomp/stompjs";
 import * as React from 'react';
 import Button from '@mui/material/Button';
-
-
+import TextField from '@mui/material/TextField';
 
 export default function Chat() {   
     type messageJSON = {
@@ -94,44 +93,36 @@ export default function Chat() {
     return(
         <div>
             {/* 바깥 */}
-            <div className="flex flex-row items-center h-52"> 
+            <div className="flex flex-row items-center h-dvh"> 
                 {/* 왼쪽 */}
-                <div className="bg-white min-w-60 h-full text-black">
+                <div className="bg-white min-w-60 h-full text-black p-5">
                     현재 접속자 숫자 : {connectedClientsCount}    
                 </div>
                 
                 {/* 오른쪽 */}
-                <div className="flex flex-col w-full h-full bg-slate-200">
-                    
-                    {/* 채팅 디스플레이 */}
-                    {/* <div>
-                        {
-                            messageList.map((message, index) => (
-                                <div key={index}>{message}</div>
-                            ))
-                        }
-                    </div> */}
-                    
-                    {/* 채팅 입력 */}
-                    <div>
-                        <div>
-                            <Button className="text-black" color="primary" variant="contained" onClick={sendChat}>
-                                전송
-                            </Button>
-
-                            <input value={message} onChange={onSetMessage}></input>
-                        </div>
-                        
-                        <div>
+                <div className="flex flex-col w-full h-full bg-slate-200 overflow-auto items-center justify-center">
+                
+                   {/**채팅유닛 */}
+                    <div className="flex flex-col bg-slate-400 rounded-md h-5/6 w-5/6 p-5">
+                        {/**채팅창 */}
+                        <div className="flex-grow">
                             <ul>
                                {
-                                chatList.map((message) => {
+                                chatList.map((message, index) => {
                                     return(
-                                        <li key={message}>{message}</li>
+                                        <li key={index}>{message}</li>
                                     )
                                 })
                                }
                             </ul>
+                        </div>
+                        {/* 채팅 입력 */}
+                        <div className="flex flex-row rounded-md p-2">
+                            <TextField label="메시지" variant="outlined" value={message} onChange={onSetMessage}/>
+                            <Button className="text-black " color="primary" variant="contained" onClick={sendChat}>
+                                전송
+                            </Button >
+                            {/* <input value={message} onChange={onSetMessage}></input> */}
                         </div>
                     </div>
                     
