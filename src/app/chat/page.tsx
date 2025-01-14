@@ -64,13 +64,7 @@ export default function Chat() {
             setConnectedClientsCount(json.userCounts);
 
             //메시지 추가
-            console.log(chatList);
-            console.log(...chatList);
-            console.log(json.message);
-            let list = [...chatList, json.message];
-            console.log(list);
             setChatList(chatList => [...chatList, json.message]);
-            console.log(...chatList);
         };
     
     }
@@ -141,11 +135,11 @@ export default function Chat() {
                         <div>
                             <ul>
                                {
-                                chatList && chatList.map((message) => {
-                                    return(
-                                        <li key={message}>{message}</li>
-                                    )
-                                })
+                                // chatList.map((message) => {
+                                //     return(
+                                //         <li key={message}>{message}</li>
+                                //     )
+                                // })
                                }
                             </ul>
                         </div>
