@@ -90,9 +90,9 @@ export default function Chat() {
     /**
      * 메시지 보여주기
      */
-    const showGreeting = (message: string) => {
-        setMessageList((prevList) => [...prevList, message]);
-    }
+    // const showGreeting = (message: string) => {
+    //     setMessageList((prevList) => [...prevList, message]);
+    // }
 
     useEffect(() => {
         //연결
@@ -120,13 +120,13 @@ export default function Chat() {
                 <div className="flex flex-col w-full h-full bg-slate-200">
                     
                     {/* 채팅 디스플레이 */}
-                    <div>
+                    {/* <div>
                         {
                             messageList.map((message, index) => (
                                 <div key={index}>{message}</div>
                             ))
                         }
-                    </div>
+                    </div> */}
                     
                     {/* 채팅 입력 */}
                     <div>
