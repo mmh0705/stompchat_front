@@ -31,7 +31,7 @@ export default function Chat() {
     //useState
     const [client] = useState<StompJs.Client | null>(null);
     const [message, setMessage] = useState("");
-    const [messageList, setMessageList] = useState<string[]>(['']);
+    //const [messageList, setMessageList] = useState<string[]>(['']);
     const [connectedClientsCount , setConnectedClientsCount] = useState(0);
     //채팅들
     const [chatList, setChatList] = useState<string[]>(["welcome"]);
@@ -44,7 +44,7 @@ export default function Chat() {
      * 연결
      */
     const connect = () =>{
-        websocket.current = new WebSocket(localSocketURL);
+        websocket.current = new WebSocket(remoteSocketURL);
         websocket.current.onopen = () => {
             console.log('웹소켓 열림');
         }
@@ -141,7 +141,7 @@ export default function Chat() {
                         <div>
                             <ul>
                                {
-                                chatList.map((message) => {
+                                chatList && chatList.map((message) => {
                                     return(
                                         <li key={message}>{message}</li>
                                     )
