@@ -50,7 +50,7 @@ export default function Chat() {
      * 연결
      */
     const connect = () =>{
-        websocket.current = new WebSocket(localSocketURL);
+        websocket.current = new WebSocket(remoteSocketURL);
         websocket.current.onopen = () => {
             console.log('웹소켓 열림');
         }
