@@ -28,12 +28,13 @@ export default function Chat() {
     //useRef
     const websocket = useRef<WebSocket | null>(null);
     const sessionId = useRef<string>("");
-    const [userFiexdNickName, setUserFiexdNickName] = useState<string>("익명");
-    const [inputUserName, setInputUserName] = useState<string>("");
+    
     
     //접속자 리스트
 
     //useState
+    const [userFiexdNickName, setUserFiexdNickName] = useState<string>("익명");
+    const [inputUserName, setInputUserName] = useState<string>("");
     const [message, setMessage] = useState("");
     const [connectedClientsCount , setConnectedClientsCount] = useState(0);
     
@@ -55,7 +56,7 @@ export default function Chat() {
      * 연결
      */
     const connect = () =>{
-        websocket.current = new WebSocket(localSocketURL);
+        websocket.current = new WebSocket(remoteSocketURL);
         websocket.current.onopen = () => {
             console.log('웹소켓 열림');
         }
@@ -76,18 +77,18 @@ export default function Chat() {
             //만약 신규 등록(initialize)라면?
             if(json.initialize === true){
                 
-                //세션 아이디 갱신
+                //1. 세션 아이디 갱신
                 sessionId.current = json.sessionId;
                 
-
                 let sendData = {
                     name: inputUserName,
                     session_id: json.sessionId
                 }
-                //세션 아이디와 닉네임 DB 저장
+                //2. 세션 아이디와 닉네임 DB 저장
                 let result:chatUserResponse = await requestPost('/api/user/create', sendData);
                 console.log(result);
-                //입장 인사
+                
+                //3. 웰컴 메시지 전송송
                 let messageData = {
                     user: inputUserName,
                     message: inputUserName + "님이 입장하셨습니다!",
