@@ -5,7 +5,7 @@ import * as StompJs from "@stomp/stompjs";
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { requestPost } from "../apis/request";
+import { requestGet, requestPost } from "../apis/request";
 
 
 export default function Chat() {   
@@ -21,22 +21,20 @@ export default function Chat() {
     }
 
     type  chatUserResponse = {
-        sessionId : string,
+        session_id : string,
         name : string
     }
 
     //useRef
     const websocket = useRef<WebSocket | null>(null);
     const sessionId = useRef<string>("");
-    const [userNickName, setUserNickName] = useState<string>("익명");
-    const [userName, setUserName] = useState<string>("");
+    const [userFiexdNickName, setUserFiexdNickName] = useState<string>("익명");
+    const [inputUserName, setInputUserName] = useState<string>("");
     
     //접속자 리스트
 
     //useState
-    const [client] = useState<StompJs.Client | null>(null);
     const [message, setMessage] = useState("");
-    //const [messageList, setMessageList] = useState<string[]>(['']);
     const [connectedClientsCount , setConnectedClientsCount] = useState(0);
     
     //채팅들
@@ -44,20 +42,28 @@ export default function Chat() {
 
     const localSocketURL = "ws://localhost:8080/user/websocket";
     const remoteSocketURL = "ws://121.162.75.86:8080/user/websocket";
-    //const [websocket, setWebsocket] = useState<WebSocket>(new WebSocket("ws://localhost:8080/user/websocket"));
+
+
+
+    const handleKeyDownEvent = (e:React.KeyboardEvent) => {
+        if(e.key === 'Enter'){
+            sendChat();
+        }
+    }
 
     /**
      * 연결
      */
     const connect = () =>{
-        websocket.current = new WebSocket(remoteSocketURL);
+        websocket.current = new WebSocket(localSocketURL);
         websocket.current.onopen = () => {
             console.log('웹소켓 열림');
         }
         
         websocket.current.onclose = async() => {
             console.log('웹소켓 닫힘');
-
+            //웹소켓이 닫혔음을 채팅창에 공지하고 새로고침을 유도한다.
+            setChatList(chatList => [...chatList, "웹소켓이 닫혔습니다. 새로고침을 해주세요!"])
         }
 
         websocket.current.onerror = () => {
@@ -66,49 +72,41 @@ export default function Chat() {
 
         websocket.current.onmessage = async (event) => {
             let json:messageJSON = JSON.parse(event.data);
-            console.log(json);
-            //만약 이니셜라이즈라면?
+            
+            //만약 신규 등록(initialize)라면?
             if(json.initialize === true){
                 
                 //세션 아이디 갱신
                 sessionId.current = json.sessionId;
                 
-                //유저 닉네임 저장
-                let nickNameData = {
-                    Id: 0,
-                    userName : userName,
-                    sessionId : sessionId.current,
-                };
 
-                let jsonResult = await requestPost('/api/user/create', nickNameData);
-                let parsedJsonResult:chatUserResponse = JSON.parse(jsonResult);
-
-                //프론트에 닉네임 저장 (secure로컬 스토리지로 변경할까?)
-                setUserNickName(parsedJsonResult.name);     
-                
+                let sendData = {
+                    name: inputUserName,
+                    session_id: json.sessionId
+                }
+                //세션 아이디와 닉네임 DB 저장
+                let result:chatUserResponse = await requestPost('/api/user/create', sendData);
+                console.log(result);
                 //입장 인사
                 let messageData = {
-                    user: userName,
-                    message: userName + "님이 입장하셨습니다!",
+                    user: inputUserName,
+                    message: inputUserName + "님이 입장하셨습니다!",
                     isWelcoming : true,
                 }
                 websocket.current?.send(JSON.stringify(messageData));
             }
             //만약 웰컴 메시지라면?
             else if(json.isWelcoming){
-                console.log('웰컴 메시지 갱신신?');
                 //화면에 메시지 추가
                 setChatList(chatList => [...chatList,json.message]);
             }
             //만약 접속자 숫자 갱신이라면?
             else if(json.userCountUpdate){
-                console.log('접속자 갱신신?');
                //접속자 갱신
                 setConnectedClientsCount(json.userCounts);
             }
             //일반 메시지 
             else{
-                console.log('화면인가요?');
                 //화면에 메시지 추가
                 setChatList(chatList => [...chatList, json.user + " : " + json.message]);
             }
@@ -123,7 +121,7 @@ export default function Chat() {
     const sendChat = ()=>{
       
         let messageData = {
-            user: userName,
+            user: inputUserName,
             message: message,
             isWelcoming : false,
         }
@@ -135,38 +133,46 @@ export default function Chat() {
      * 닉네임 등록
      */
     const applyNickname = async () => {
-        //일단 커넥트 
-        connect();
-        // let nickNameData = {
-        //     UserName : userName,
-        //     SessionId : '',
-        // };
+        //공백 이름인지 확인.
+        if(inputUserName === ''){
+            //모달 띄우기
+        }
+        else{
+            //닉네임 있는지 확인
+            let jsonResult = await requestGet('/api/user/check?name=' + inputUserName);
 
-        // let result: string = await requestPost('/api/users', nickNameData);
-        // if(typeof(result) !== undefined){
-        //     console.log(JSON.parse(result));
-        // }
+            //
+            if(jsonResult){
+                //닉네임 중복 모달창 띄우기
+                console.log(jsonResult);
+            }
+            else{
+                //커넥트 
+                //프론트에 닉네임 저장 (secure로컬 스토리지로 변경할까?)
+                setUserFiexdNickName(inputUserName);    
+                connect();
+            }
+        }
 
+     
+       
     }
 
-    const onCommitNickname = () => {
-
-    }
-
+    /**
+     * useEffect
+     */
     useEffect(() => {
-        //연결
-        //connect();
-        setUserName("");
+        setInputUserName("");
         return () => {
             websocket.current?.close();
         };
     },[]);
 
     useEffect(()=>{
-        if(userNickName !== "익명"){
+        if(userFiexdNickName !== "익명"){
             console.log("done!");
         }
-    },[userNickName]);
+    },[userFiexdNickName]);
 
     const onSetMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(event.target.value);
@@ -175,12 +181,12 @@ export default function Chat() {
     return(
         <div>
             {
-                userNickName === "익명" 
+                userFiexdNickName === "익명" 
                 ?
                 <div className="flex flex-col items-center h-dvh justify-center">
                     <div className="flex flex-col bg-teal-600 rounded-md p-10">
                         닉네임을 입력해주세요
-                        <TextField label="닉네임" variant="outlined" value={userName} onChange={(event) => setUserName(event.target.value)}/>
+                        <TextField label="닉네임" variant="outlined" value={inputUserName} onChange={(event) => setInputUserName(event.target.value)}/>
                         <Button variant="contained" onClick={applyNickname}>확인</Button>
                     </div>
                 </div>
@@ -195,7 +201,7 @@ export default function Chat() {
                     {/* 아래쪽 */}
                     <div className="flex flex-col w-full h-full bg-slate-200 items-center justify-center">
                     
-                    {/**채팅유닛 */}
+                        {/**채팅유닛 */}
                         <div className="flex flex-col bg-slate-400 rounded-md h-5/6 w-5/6 p-5 ">
                             {/**채팅창 */}
                             <div className="flex-grow overflow-auto">
@@ -211,8 +217,9 @@ export default function Chat() {
                             </div>
                             {/* 채팅 입력 */}
                             <div className="flex flex-row rounded-md p-2">
-                                <TextField label="메시지" variant="outlined" value={message} onChange={onSetMessage}/>
-                                <Button className="text-black " color="primary" variant="contained" onClick={sendChat}>
+                                <TextField label="메시지" variant="outlined" value={message} onChange={onSetMessage} onKeyDown={(e:React.KeyboardEvent) => handleKeyDownEvent(e)}/>
+                                {/* <input placeholder="엔터키 테스트" ></input> */}
+                                <Button className="text-black " color="primary" variant="contained" onClick={sendChat} >
                                     전송
                                 </Button >
                                 {/* <input value={message} onChange={onSetMessage}></input> */}
