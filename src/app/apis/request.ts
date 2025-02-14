@@ -1,7 +1,8 @@
-const localUrl = 'http://localhost:8080';
-const remoteUrl = 'http://121.162.75.86:8080';
+const localUrl = 'localhost:8080';
+const remoteUrl = '121.162.75.86:8080';
 
-export const apiUrl = remoteUrl;
+export const apiIP = remoteUrl;
+export const apiUrl = 'http://' + apiIP;
 
 export const requestGet = async(url:string):Promise<any> => {
     // const token = ""; //로컬 스토리지에서 가져와야함
