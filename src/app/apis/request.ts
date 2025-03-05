@@ -1,5 +1,5 @@
 const localUrl = 'localhost:8080';
-const remoteUrl = '121.162.75.86:8080';
+const remoteUrl = '222.110.67.153:8080';
 
 export const apiIP = remoteUrl;
 export const apiUrl = 'http://' + apiIP;

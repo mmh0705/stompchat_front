@@ -7,7 +7,7 @@ module.exports = {
       port:  '2222',
       key : '~/.ssh/id_rsa',
       user : 'siin',
-      host : '121.162.75.86',
+      host : '222.110.67.153',
       ref  : 'origin/master',
       repo : 'https://github.com/mmh0705/stompchat_front.git',
       path : '/home/siin',

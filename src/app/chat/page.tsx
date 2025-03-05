@@ -37,13 +37,18 @@ export default function Chat() {
     const websocket = useRef<WebSocket | null>(null);
     const sessionId = useRef<string>("");
     const userUniqueColor = useRef<string>("");
-    
+    const chatListRef = useRef<HTMLDivElement | null>(null);
+    const divRef = useRef<HTMLDivElement>(null);
+    const inputDivRef = useRef<HTMLDivElement>(null);
     //useState
     const [userFiexdNickName, setUserFiexdNickName] = useState<string>("익명");
     const [inputUserName, setInputUserName] = useState<string>("");
     const [message, setMessage] = useState("");
     const [connectedClientsCount , setConnectedClientsCount] = useState(0);
-    
+    //채팅창 높이  
+    const [divHeight, setDivHeight] = useState<any>(394);
+    const [onFocusToggle, setOnFocusToggle] = useState<boolean>(false);
+
     //채팅들
     const [chatObjectList, setChatObjectList] = useState<chatObject[]>([]);
 
@@ -191,13 +196,35 @@ export default function Chat() {
         }
     }
 
+    //메시지 
+    const onSetMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage(event.target.value);
+    }
+
+    const changeDivHeight = () => {
+        if(divRef.current?.offsetHeight !== undefined && inputDivRef.current?.offsetHeight !== undefined){
+            setDivHeight(divRef.current?.offsetHeight - inputDivRef.current?.offsetHeight);
+        }
+    }
+
     /**
      * useEffect
      */
     useEffect(() => {
+
+        const observer = new ResizeObserver(()=>{
+            console.log(divRef.current?.offsetHeight);
+            console.log(inputDivRef.current?.offsetHeight)
+    
+            changeDivHeight();
+        });
+
+        observer.observe(document.body);
+
         setInputUserName("");
         return () => {
             websocket.current?.close();
+            observer.disconnect();
         };
     },[]);
 
@@ -207,19 +234,43 @@ export default function Chat() {
         }
     },[userFiexdNickName]);
 
-    const onSetMessage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMessage(event.target.value);
-    }
+    //채팅 스크롤 항상 하단으로 유지
+    useEffect(()=>{
+        if(chatListRef.current){
+            chatListRef.current.scrollIntoView({behavior : "smooth"});
+            //chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+        }
+    },[chatObjectList]);
+    
+    useEffect(()=>{
+        console.log(divRef.current?.offsetHeight);
+        console.log(inputDivRef.current?.offsetHeight)
 
+        if(divRef.current?.offsetHeight !== undefined && inputDivRef.current?.offsetHeight !== undefined){
+            console.log(divRef.current?.offsetHeight - inputDivRef.current?.offsetHeight);
+            setDivHeight(divRef.current?.offsetHeight - inputDivRef.current?.offsetHeight);
+            //setDivHeight(30);
+        }
+    },[divRef.current]);
+
+    useEffect(()=>{
+        if(onFocusToggle){
+            console.log('focus');
+            changeDivHeight();
+        }else{
+            console.log('blur');
+        }
+    },[onFocusToggle]);
     return(
-        <div>
+        <div className="h-[calc(100vh-120px)] min-h-[calc(100vh-120px)]">
             {
                 userFiexdNickName === "익명" 
                 ?
                 /**
                  * 닉네임 등록창
                  */
-                <div className="flex flex-col items-center h-dvh justify-center">
+                //화면에 꽉차게 하기 위한 calc를 적용한 height
+                <div className="flex flex-col items-center justify-center h-full">
                     <div className="flex flex-col bg-teal-600 rounded-md p-10">
                         닉네임을 입력해주세요
                         <TextField label="닉네임" variant="outlined" value={inputUserName} onChange={(event) => setInputUserName(event.target.value)}/>
@@ -227,60 +278,69 @@ export default function Chat() {
                     </div>
                 </div>
                 :
-
                 /**
                  * 채팅창
                  */
 
-                /* 바깥 */
-                <div className="flex flex-col items-center h-dvh"> 
+                /* 바깥 */ 
+                //화면에 꽉차게 하기 위한 calc를 적용한 height
+                <div className="flex flex-col items-center h-full"> 
                     {/* 위쪽 */}
                     <div className="bg-white min-w-60 h-16 text-black p-5">
                         현재 접속자 숫자 : {connectedClientsCount}    
                     </div>
                     
                     {/* 아래쪽 */}
-                    <div className="flex flex-col w-full h-full bg-slate-200 items-center justify-center">
+                    <div className="flex flex-col w-full h-full  bg-slate-200 items-center justify-center">
                     
                         {/**채팅유닛 */}
-                        <div className="flex flex-col bg-slate-400 rounded-md h-5/6 w-5/6 p-5 ">
+                        <div className={`flex flex-col bg-slate-400 rounded-md w-5/6 mt-10 mb-10`} ref={divRef}
+                        style={{height:'60vh'}}>
+                        
+                        {/* <div style={{height:'20px', backgroundColor:'purple'}}></div> */}
+                            
                             {/**채팅창 */}
-                            <div className="flex-grow overflow-auto">
-                                <ul>
-                                {
-                                    chatObjectList.map((chatObject, index) => {
-
-                                        // - 웰컴 메시지
-                                        if(chatObject.isWelcoming){
-                                            return(
-                                                <li key={index}>
-                                                    {chatObject.message}
-                                                </li>
-                                            )
-                                        }
-                                        // - 일반 메시지
-                                        else 
-                                        {
-                                            return(
-                                                <li key={index}>
-                                                    <span style={{
-                                                        color: chatObject.color
-                                                    }}>
-                                                        <b>{chatObject.name}</b>
-                                                    </span>
-                                                    
-                                                    : {chatObject.message}
-                                                </li>
-                                            )
-                                        }
-                                       
-                                    })
-                                }
-                                </ul>
+                            <div className={`flex flex-col overflow-y-auto`} style={{ height:'50vh', paddingLeft:'10px', paddingRight:'10px', paddingTop:'10px'}}>
+                                <div>
+                                    {
+                                        chatObjectList.map((chatObject, index) => {
+                                            // - 웰컴 메시지
+                                            if(chatObject.isWelcoming){
+                                                return(
+                                                    <div key={index}  >
+                                                        {chatObject.message}
+                                                    </div>
+                                                )
+                                            }
+                                            // - 일반 메시지
+                                            else 
+                                            {
+                                                return(
+                                                    <div key={index} >
+                                                        <span style={{
+                                                            color: chatObject.color
+                                                        }}>
+                                                            <b>{chatObject.name}</b>
+                                                        </span>
+                                                        
+                                                        : {chatObject.message}
+                                                    </div>
+                                                )
+                                            }
+                                        })
+                                    }
+                                    <div style={{height:'20px'}}></div>
+                                </div>
+                                
+                                <div ref={chatListRef}></div>
                             </div>
                             {/* 채팅 입력 */}
-                            <div className="flex flex-row rounded-md p-2">
-                                <TextField label="메시지" variant="outlined" value={message} onChange={onSetMessage} onKeyDown={(e:React.KeyboardEvent) => handleKeyDownEvent(e)}/>
+                            <div className="flex flex-row rounded-md p-2" ref={inputDivRef}
+                                style={{
+                                    height:'10vh'
+                                }}
+                            >
+                                <TextField label="메시지" variant="outlined" value={message} onChange={onSetMessage} onKeyDown={(e:React.KeyboardEvent) => handleKeyDownEvent(e)} onFocus={()=>{setOnFocusToggle(true)}} onBlur={()=>{setOnFocusToggle(false)}}/>
                                 {/* <input placeholder="엔터키 테스트" ></input> */}
                                 <Button className="text-black " color="primary" variant="contained" onClick={sendChat} >
                                     전송

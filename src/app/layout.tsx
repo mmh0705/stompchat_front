@@ -27,15 +27,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-300`}
+        className="bg-slate-300"
       >
-        <header className="bg-slate-900 text-white p-4 text-center">
+        <div className="flex flex-row justify-center bg-slate-900 text-white p-4 text-center fixed h-[60px] w-full">
           <Navigation/>
-        </header>
-        {children}
-        <footer className="bg-slate-900 text-white p-4 text-center">
+        </div>
+        {
+          //padding top을 헤더의 높이인 14를 줌으로써 
+        }
+        <div className="bg-blue-300 pt-[60px]">
+          {children}
+        </div>
+
+        <div className="flex justify-center items-center bg-slate-900 text-white h-[60px] text-center">
           바이용
-        </footer>
+        </div>
       </body>
     </html>
   );

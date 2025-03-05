@@ -5,7 +5,7 @@ export default function About() {
     const router = useRouter();
 
     return (
-        <div>
+        <div className="min-h-[calc(100vh-120px)]">
             <h1>About us</h1>
             <button 
                 onClick={() => router.push("/")}
