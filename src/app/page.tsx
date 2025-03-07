@@ -20,12 +20,12 @@ export default function Home() {
         />
 
         카카오 로그인
-        <a href={'https://kauth.kakao.com/oauth/authorize?client_id=d9d1c24e59bc7233b5127e22af2e2857&redirect_uri='+ apiIP +'/api/oauth/kakao&response_type=code'}>
+        <a href={'https://kauth.kakao.com/oauth/authorize?client_id=d9d1c24e59bc7233b5127e22af2e2857&redirect_uri=http://'+ apiIP +'/api/oauth/kakao&response_type=code'}>
           <img src={kakaoImage.src} alt='kakao'/>
         </a>
         
         구글 로그인
-        <a href={'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + '759044180252-jern2hsld81sthnlks6rq0pefemfgqe1.apps.googleusercontent.com' + '&redirect_uri=' + apiIP +'/api/oauth/google' + '&response_type=code' + '&scope=email profile'}>
+        <a href={'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + '759044180252-jern2hsld81sthnlks6rq0pefemfgqe1.apps.googleusercontent.com' + '&redirect_uri=http://' + apiIP +'/api/oauth/google' + '&response_type=code' + '&scope=email profile'}>
           <img src={googleImage.src} alt="google"/>
         </a>
         <Greet/>

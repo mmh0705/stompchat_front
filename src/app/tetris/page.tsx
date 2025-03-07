@@ -11,7 +11,7 @@ type minoXY_Object = {
 export default function About() {
     const router = useRouter();
 
-    const [count, setCount] = useState(1);
+    const [height, setHeight] = useState(0);
 
     const [current_minoXY, setcurrent_MinoXY] = useState<minoXY_Object[]>(
         [
@@ -54,32 +54,47 @@ export default function About() {
 
         //브릭의 현재 좌표를 확인한다.
         //브릭의 현재 좌표를 0으로 만들고 row가 하나씩 증가 되어서 1을 넣어준다.
-        for(let i = 0; i < 4;  i++){
-
-
-            setGridList((prevMatrix) => {
-                return prevMatrix.map((row, rowIndex) => 
-                    row.map((num, colIndex) => 
-                        rowIndex === 0 && colIndex === 0 ? (num === 0 ? 1 : 0)  : num
-                    )
-                ); 
-            });
-        }
         
+        
+        // setGridList((prevMatrix) => {
+        //     return prevMatrix.map((row, rowIndex) => 
+        //         row.map((num, colIndex) => 
+        //             rowIndex === 0 && colIndex === 0 ? (num === 0 ? 1 : 0)  : num
+        //         )
+        //     ); 
+        // });
 
         //브릭의 현재 좌표를 0으로 만들고 row가 하나씩 증가 되어서 1을 넣어준다.
         //
     };
     
     useEffect(()=>{
-        //console.log(gridList);
-    },gridList);
+        console.log(height);
+        for(let i = 0; i < 4;  i++){
+            setGridList((prevMatrix) => {
+                return prevMatrix.map((row, rowIndex) => 
+                    row.map((num, colIndex) => 
+                        (
+                            rowIndex === height && colIndex === i 
+                            ? 1  
+                            : rowIndex === height-1 && colIndex === i 
+                            ? 0
+                            : height === 0 && (rowIndex === 19 && colIndex === i)
+                            ? 0
+                            : num
+                        ) 
+                    )
+                ); 
+            });
+        }
+    },[height]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
             //setcurrent_MinoXY((prevMino) => (, prevMino));
+            setHeight((prev) => prev < 19 ? prev + 1 : prev - 19);
             brickDown();
-        }, 800);
+        }, 400);
 
         return () => clearInterval(intervalId);
     }, []);
