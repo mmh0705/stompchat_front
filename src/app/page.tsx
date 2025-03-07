@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Greet } from "./components/greet";
 import { Counter } from "./components/counter";
+import kakaoImage from "./resources/kakao_login_medium_narrow.png";
+import googleImage from "./resources/google_login.png"
 
 export default function Home() {
 
@@ -15,11 +17,21 @@ export default function Home() {
           height={38}
           priority
         />
+
+        카카오 로그인
+        <a href='https://kauth.kakao.com/oauth/authorize?client_id=d9d1c24e59bc7233b5127e22af2e2857&redirect_uri=http://localhost:8080/api/oauth/kakao&response_type=code'>
+          <img src={kakaoImage.src} alt='kakao'/>
+        </a>
+        
+        구글 로그인
+        <a href={'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + '759044180252-jern2hsld81sthnlks6rq0pefemfgqe1.apps.googleusercontent.com' + '&redirect_uri=' + 'http://localhost:8080/api/oauth/google' + '&response_type=code' + '&scope=email profile'}>
+          <img src={googleImage.src} alt="google"/>
+        </a>
         <Greet/>
         <Counter/>
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2">
-            Get started by editing{" "}
+            Get started by editing{"/kakao_login_medium_narrow.png"}
             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
               src/app/page.tsx
             </code>

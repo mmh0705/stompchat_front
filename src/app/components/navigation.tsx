@@ -8,13 +8,16 @@ export const Navigation = () => {
     return (
         <nav >
             <Link href="/" className={pathname === '/' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
-                Home
+                홈
             </Link>
-            <Link href="/about" className={pathname === '/about' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
-                About
+            <Link href="/login" className={pathname === '/login' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
+                로그인
+            </Link>
+            <Link href="/tetris" className={pathname === '/tetris' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
+                테트리스
             </Link>
             <Link href="/chat" className={pathname === '/chat' ? 'font-bold mr-4' : 'mr-4 text-blue-500'}>
-                Chat
+                채팅
             </Link>
         </nav>
     );
