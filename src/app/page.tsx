@@ -26,7 +26,9 @@ export default function Home() {
         
         구글 로그인
         <a href={'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + '759044180252-jern2hsld81sthnlks6rq0pefemfgqe1.apps.googleusercontent.com' + '&redirect_uri=http://' + apiIP +'/api/oauth/google' + '&response_type=code' + '&scope=email profile'}>
-          <img src={googleImage.src} alt="google"/>
+          <img src={googleImage.src} alt="google" style={{
+            height:'40px'
+          }}/>
         </a>
         <Greet/>
         <Counter/>
